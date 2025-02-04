@@ -1,11 +1,14 @@
+import BookList from "@/components/BookList";
+import BookOverview from "@/components/BookOverview";
 import { Button } from "@/components/ui/button";
+import { sampleBooks } from "@/constants";
 import React from "react";
 
 const Home = () => {
   return (
     <div>
-    <h1 className="text-4xl">Jeez</h1>
-    <Button>Click me</Button>
+   <BookOverview {...sampleBooks[0]}/>
+   <BookList title='Latest Books' books={sampleBooks} containerClassname = "mt-28"/>
     </div>
   );
 };
