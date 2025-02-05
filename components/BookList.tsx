@@ -4,7 +4,7 @@ import BookCard from "./BookCard";
 interface Props {
   title: string;
   books: Book[];
-  containerClassname: string;
+  containerClassname?: string;
 }
 const BookList = ({ title, books, containerClassname }: Props) => {
   return (
