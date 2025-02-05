@@ -3,7 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import localFont from "next/font/local";
 import { ReactNode } from "react";
-
+import { Toaster } from "@/components/ui/toaster";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 export const metadata: Metadata = {
   title: "BookWise",
   description: "A Library Management System",
@@ -23,18 +26,27 @@ const bebasNeue = localFont({
   ],
   variable: "--bebas-neue",
 });
-export default function RootLayout({
+
+const layout = async ({
   children,
 }: Readonly<{
   children: ReactNode;
-}>) {
+}>) => {
+  const session = await auth();
+
+
   return (
     <html lang="en">
-      <body
-        className={` ${ibmPlexSans.className} ${bebasNeue.variable}  antialiased`}
-      >
-        {children}
-      </body>
+      <SessionProvider session={session}>
+        <body
+          className={` ${ibmPlexSans.className} ${bebasNeue.variable}  antialiased`}
+        >
+          {children}
+          <Toaster />
+        </body>
+      </SessionProvider>
     </html>
   );
-}
+};
+
+export default layout;
