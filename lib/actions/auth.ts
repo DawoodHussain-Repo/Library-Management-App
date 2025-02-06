@@ -9,6 +9,7 @@ import { signIn } from "@/auth";
 import { headers } from "next/headers";
 import ratelimit from "../ratelimit";
 import { redirect } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 export const signInWithCredential = async (
   params: Pick<AuthCredentials, "email" | "password">

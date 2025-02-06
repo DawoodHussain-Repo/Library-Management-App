@@ -56,13 +56,15 @@ const AuthForm = <T extends FieldValues>({
     if (result.success) {
       toast({
         title: "Success",
-        description: isSignIn ? "Signed in successfully" : "Signed up successfully"
-      })
+        description: isSignIn
+          ? "Signed in successfully"
+          : "Signed up successfully",
+      });
       router.push("/");
     } else {
       toast({
         title: "Error",
-        description: result.error || "An error occurred"
+        description: result.error || "An error occurred",
       });
     }
   };
@@ -94,7 +96,14 @@ const AuthForm = <T extends FieldValues>({
                   </FormLabel>
                   <FormControl>
                     {field.name === "universityCard" ? (
-                      <FileUpload onFileChange={field.onChange} />
+                      <FileUpload
+                        type="image"
+                        accept="image/*"
+                        placeholder="Upload Your ID"
+                        folder="ids"
+                        variant="dark"
+                        onFileChange={field.onChange}
+                      />
                     ) : (
                       <Input
                         required

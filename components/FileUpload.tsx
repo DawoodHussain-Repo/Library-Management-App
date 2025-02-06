@@ -1,20 +1,34 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { IKImage, ImageKitProvider, IKUpload } from "imagekitio-next";
+import { IKImage, ImageKitProvider, IKUpload, IKVideo } from "imagekitio-next";
 import { Upload } from "lucide-react";
 import config from "@/lib/config";
 import Image from "next/image";
 import { FilePath } from "tailwindcss/types/config";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 const publicKey = config.env.imagekit.publicKey;
 const urlEndpoint = config.env.imagekit.urlEndpoint;
-const FileUpload = ({
-  onFileChange,
-}: {
-  onFileChange: (filePath: string) => void;
-}) => {
- 
 
+interface Props {
+  type: "image" | "video";
+  accept: string;
+  placeholder: string;
+  folder: string;
+  variant: "dark" | "light";
+  onFileChange: (filePath: string) => void;
+  value?: string;
+}
+
+const FileUpload = ({
+  type,
+  accept,
+  placeholder,
+  folder,
+  variant,
+  value,
+  onFileChange,
+}: Props) => {
   const authenticator = async () => {
     try {
       const response = await fetch(`${config.env.apiEndpoint}/api/imagekit`);
@@ -37,12 +51,19 @@ const FileUpload = ({
     }
   };
   const ikUploadRef = useRef(null);
-  const [file, setFile] = useState<{ filePath: string } | null>(null);
-
+  const [file, setFile] = useState<{ filePath: string } | null>(
+    value ? { filePath: value } : null
+  );
+  const [progress, setProgress] = useState(0);
+  const styles = {
+    button: variant === "dark" ? "bg-dark-300" : "bg-light-600",
+    placeholder: variant === "dark" ? "text-light-100" : "text-slate-500",
+    text: variant === "dark" ? "text-light-100" : "text-dark-400",
+  };
   const onError = (e: any) => {
     toast({
-      title: `Image upload failed`,
-      description: `Your Image could not be uploaded. Please try again.`,
+      title: `${type} upload failed`,
+      description: `Your ${type} could not be uploaded. Please try again.`,
       variant: "destructive",
     });
     console.log("Error uploading file", e);
@@ -52,11 +73,32 @@ const FileUpload = ({
     setFile(res);
     onFileChange(res.filePath);
     toast({
-      title: `Image uploaded successfully`,
+      title: `${type} uploaded successfully`,
       description: `${res.filePath} uploaded successfully!`,
     });
   };
-
+  const onValidate = (file: File) => {
+    if (file.type === "image") {
+      if (file.size > 20 * 1024 * 1024) {
+        toast({
+          title: `Image size too large`,
+          description: `Please upload a file less than 20MB`,
+          variant: "destructive",
+        });
+        return false;
+      }
+    } else if (type === "video") {
+      if (file.size > 50 * 1024 * 1024) {
+        toast({
+          title: `Video size too large`,
+          description: `Please upload a file less than 50MB`,
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+    return true;
+  };
   return (
     <ImageKitProvider
       publicKey={publicKey}
@@ -68,10 +110,17 @@ const FileUpload = ({
         ref={ikUploadRef}
         onError={onError}
         onSuccess={onSuccess}
-        fileName="test-upload.png"
+        useUniqueFileName={true}
+        validateFile={onValidate}
+        onUploadStart={() => setProgress(0)}
+        onUploadProgress={({ loaded, total }) =>
+          setProgress(Math.round(loaded / total) * 100)
+        }
+        folder={folder}
+        accept={accept}
       />
       <button
-        className="upload-btn"
+        className={cn("upload-btn", styles.button)}
         onClick={(e) => {
           e.preventDefault();
           if (ikUploadRef.current) {
@@ -87,18 +136,31 @@ const FileUpload = ({
           alt="upload"
           className="object-contain"
         />
-        <p className="text-base text-light-100 ">Upload a File</p>
-        {file && <p className="upload-filename ">{file.filePath}</p>}
-       
+        <p className={cn("text-base", styles.placeholder)}>{placeholder}</p>
+        {file && <p className={cn("upload-filename ", styles.text)}></p>}
       </button>
-      {file && (
+      {progress > 0 && progress !== 100 && (
+        <div className="w-full rounded-full bg-green-200">
+          <div className="progress" style={{ width: `${progress}%` }}>
+            {progress}%
+          </div>
+        </div>
+      )}
+      {file &&
+        (type === "image" ? (
           <IKImage
             alt={file.filePath}
             path={file.filePath}
             width={700}
             height={500}
           />
-        )}
+        ) : type === "video" ? (
+          <IKVideo
+            path={file.filePath}
+            controls={true}
+            className="w-full h-96 rounded-xl"
+          />
+        ) : null)}
     </ImageKitProvider>
   );
 };
