@@ -4,17 +4,41 @@ import starIcon from "@/public/icons/star.svg";
 import { Button } from "./ui/button";
 import bookIcon from "@/public/icons/book.svg";
 import BookCover from "./BookCover";
-const BookOverview = ({
+import BorrowButton from "./BorrowButton";
+import { db } from "@/database/drizzle";
+import { users } from "@/database/schema";
+import { eq } from "drizzle-orm";
+interface Props extends Book {
+  userId: string;
+}
+const BookOverview = async ({
+  id,
   title,
   author,
   genre,
   rating,
-  total_copies,
-  available_copies,
+  totalCopies,
+  availableCopies,
   description,
-  color,
-  cover,
-}: Book) => {
+  coverColor,
+  coverUrl,
+  userId,
+}: Props) => {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  if (!user) {
+    return null;
+  }
+  const borrowEligibility = {
+    isEligible: availableCopies > 0 && user.status === "APPROVED",
+    message:
+      availableCopies > 0
+        ? "Books Not Available"
+        : "You Are Not Eligible To Borrow Books",
+  };
   return (
     <section className="book-overview">
       <div className="flex flex-1 flex-col  gap-5">
@@ -34,29 +58,34 @@ const BookOverview = ({
         </div>
         <div className="book-copies">
           <p>
-            Total Books: <span>{total_copies}</span>
+            Total Books: <span>{totalCopies}</span>
           </p>
 
           <p>
-            Available Books: <span>{available_copies}</span>
+            Available Books: <span>{availableCopies}</span>
           </p>
         </div>
         <p className="book-description">{description}</p>
-        <Button className="book-overview_btn">
-          <Image src={bookIcon} alt="book" width={20} height={20} />
-          <p className="text-dark-100 font-bebas-neue text-xl">Borrow Book</p>
-        </Button>
+        <BorrowButton
+          bookId={id}
+          userId={userId}
+          borrowingEligibility={borrowEligibility}
+        />
       </div>
       <div className="flex relative flex-1 justify-center ">
         <div className="relative">
           <BookCover
-            coverColor={color}
-            coverImage={cover}
+            coverColor={coverColor}
+            coverImage={coverUrl}
             variant="wide"
             className="z-10 "
           />
           <div className="absolute left-16 top-10 rotate-12 opacity-40 hidden md:block ">
-            <BookCover coverColor={color} coverImage={cover} variant="wide" />
+            <BookCover
+              coverColor={coverColor}
+              coverImage={coverUrl}
+              variant="wide"
+            />
           </div>
         </div>
       </div>
