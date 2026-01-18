@@ -13,16 +13,25 @@ const layout = async ({ children }: { children: ReactNode }) => {
     redirect("/sign-in");
   }
   
-  if (!session.user) {
+  if (!session.user?.id) {
     redirect("/sign-in");
+  }
+
+  // Validate UUID format to prevent "invalid input syntax for type uuid" error
+  /* eslint-disable-next-line @typescript-eslint/no-require-imports */
+  const { validate: uuidValidate } = require("uuid");
+  if (!uuidValidate(session.user.id)) {
+      // Invalid ID format, possibly stale session or non-uuid legacy ID
+      // Redirect or handle gracefully. For now, redirect to home or sign-in.
+      redirect("/sign-in");
   }
 
   const isAdmin = await db
     .select({ isAdmin: users.role })
     .from(users)
-    .where(eq(users.id, session.user.id!))
+    .where(eq(users.id, session.user.id))
     .limit(1)
-    .then((res) => res[0].isAdmin === "ADMIN");
+    .then((res) => res[0]?.isAdmin === "ADMIN");
 
   if (!isAdmin) {
     redirect("/");

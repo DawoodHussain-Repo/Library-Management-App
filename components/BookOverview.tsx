@@ -24,6 +24,14 @@ const BookOverview = async ({
   coverUrl,
   userId,
 }: Props) => {
+  // Validate UUID format to prevent crashes
+  /* eslint-disable-next-line @typescript-eslint/no-require-imports */
+  const { validate: uuidValidate } = require("uuid");
+  
+  if (!uuidValidate(userId)) {
+      return null;
+  }
+
   const [user] = await db
     .select()
     .from(users)
