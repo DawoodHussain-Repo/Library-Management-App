@@ -9,14 +9,13 @@ BookWise is a modern, full-stack library management application built with the l
 - **ORM:** [Drizzle ORM](https://orm.drizzle.team/)
 - **Authentication:** [NextAuth.js](https://authjs.dev/) (v5)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Caching & Rate Limiting:** [Upstash Redis](https://upstash.com/)
-- **Workflow:** [Upstash QStash](https://upstash.com/docs/qstash/overall/getstarted)
 - **Image & Video Storage:** [ImageKit](https://imagekit.io/)
 - **Language:** TypeScript
 
 ## ✨ Features
 
 ### User Features
+
 - **Browse Books:** View a collection of books with details like author, genre, and rating.
 - **Search & Filter:** Find books easily (implementation pending).
 - **Borrowing System:** Request to borrow books (with availability tracking).
@@ -25,6 +24,7 @@ BookWise is a modern, full-stack library management application built with the l
 - **Responsive Design:** Optimized for both desktop and mobile devices.
 
 ### Admin Features
+
 - **Dashboard:** Overview of total users, books, and borrowing stats.
 - **User Management:** View and manage user accounts (approve/reject requests).
 - **Book Management:** Add, edit, and delete books.
@@ -55,17 +55,14 @@ NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT="your_url_endpoint"
 IMAGEKIT_PRIVATE_KEY="your_private_key"
 
 # App
-NEXT_PUBLIC_API_ENDPOINT="http://localhost:3000/api"
-NEXT_PUBLIC_PROD_API_ENDPOINT="https://your-domain.com/api"
+NEXT_PUBLIC_API_ENDPOINT="http://localhost:3000"
+NEXT_PUBLIC_PROD_API_ENDPOINT="https://your-domain.com"
 
-# Auth
+# Auth.js / NextAuth
 AUTH_SECRET="your_generated_secret" # run `npx auth secret`
+NEXTAUTH_URL="http://localhost:3000"
+AUTH_TRUST_HOST="true"
 
-# Upstash (Redis & QStash)
-UPSTASH_REDIS_URL="your_redis_url"
-UPSTASH_REDIS_TOKEN="your_redis_token"
-QSTASH_URL="your_qstash_url"
-QSTASH_TOKEN="your_qstash_token"
 ```
 
 ### Running the App

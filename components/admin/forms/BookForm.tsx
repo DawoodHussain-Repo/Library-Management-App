@@ -53,7 +53,7 @@ const BookForm = ({ type, ...book }: Props) => {
         description: "Book created successfully",
       });
 
-      router.push(`/admin/books/${result.data.id}`);
+      router.push("/admin/books");
     } else {
       toast({
         title: "Error",
@@ -204,7 +204,10 @@ const BookForm = ({ type, ...book }: Props) => {
                 Primary Color
               </FormLabel>
               <FormControl>
-                <ColorPicker onPickerChange={field.onChange} value={field.value} />
+                <ColorPicker
+                  onPickerChange={field.onChange}
+                  value={field.value}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -239,7 +242,6 @@ const BookForm = ({ type, ...book }: Props) => {
                 Book Trailer
               </FormLabel>
               <FormControl>
-              
                 <FileUpload
                   type="video"
                   accept="video/*"

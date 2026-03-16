@@ -1,13 +1,19 @@
 import Image from "next/image";
 import React, { ReactNode } from "react";
 import Logo from "@/public/icons/logo.svg";
-import Illustration from '@/public/images/auth-illustration.png'
+import Illustration from "@/public/images/auth-illustration.png";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 const layout = async ({ children }: { children: ReactNode }) => {
   const session = await auth();
 
-  if (session) redirect("/");
+  if (session) {
+    if (session.user?.role === "ADMIN") {
+      redirect("/admin");
+    }
+
+    redirect("/");
+  }
 
   return (
     <main className="auth-container">
@@ -21,7 +27,13 @@ const layout = async ({ children }: { children: ReactNode }) => {
         </div>
       </section>
       <section className="auth-illustration">
-<Image src={Illustration} width={1000} height={1000} className="object-cover size-full" alt="logo" />
+        <Image
+          src={Illustration}
+          width={1000}
+          height={1000}
+          className="object-cover size-full"
+          alt="logo"
+        />
       </section>
     </main>
   );

@@ -7,7 +7,7 @@ interface Props {
   containerClassname?: string;
 }
 const BookList = ({ title, books, containerClassname }: Props) => {
-  if (books.length < 2) {
+  if (books.length < 1) {
     return null;
   }
   return (

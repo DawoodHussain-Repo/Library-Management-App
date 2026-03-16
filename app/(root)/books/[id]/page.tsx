@@ -9,6 +9,14 @@ import BookVideo from "@/components/BookVideo";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const id = (await params).id;
+
+  const isUuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      id,
+    );
+
+  if (!isUuid) redirect("/404");
+
   const session = await auth();
 
   // Fetch data based on id
@@ -41,7 +49,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
           </section>
         </div>
-
       </div>
     </>
   );

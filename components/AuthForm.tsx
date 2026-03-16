@@ -31,7 +31,11 @@ import { toast } from "@/hooks/use-toast";
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
   defaultValues: T;
-  onSubmit: (data: T) => Promise<{ success: boolean; error?: string }>;
+  onSubmit: (data: T) => Promise<{
+    success: boolean;
+    error?: string;
+    role?: "USER" | "ADMIN";
+  }>;
   type: "SIGN_IN" | "SIGN_UP";
 }
 
@@ -60,6 +64,12 @@ const AuthForm = <T extends FieldValues>({
           ? "Signed in successfully"
           : "Signed up successfully",
       });
+
+      if (isSignIn && result.role === "ADMIN") {
+        router.push("/admin");
+        return;
+      }
+
       router.push("/");
     } else {
       toast({
